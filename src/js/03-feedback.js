@@ -1,62 +1,39 @@
+'use strict';
 import throttle from 'lodash.throttle';
 
 const KEY_LOCAL_STORAGE = 'feedback-form-state';
-const form = document.querySelector('form.feedback-form');
-const EmailInputDefault = document.querySelector('input[type="email"]');
-const MessageInputDeafult = document.querySelector('textarea[name="message"]');
-let emailStorage;
-let messageStorage;
+const form = document.querySelector('form');
+const currentData = JSON.parse(localStorage.getItem(KEY_LOCAL_STORAGE));
 
-function setLocalStorage(value) {
-  try {
-    const valueToSave = JSON.stringify(value);
-    localStorage.setItem(KEY_LOCAL_STORAGE, valueToSave);
-  } catch (error) {
-    console.error('Set state error:', error.message);
+window.addEventListener('load', fillForm());
+
+form.addEventListener(
+  'input',
+  throttle(() => {
+    const { email, message } = form.elements;
+    let inputedData = {
+      email: email.value,
+      message: message.value,
+    };
+    localStorage.setItem(KEY_LOCAL_STORAGE, JSON.stringify(inputedData));
+  }, 500)
+);
+
+function fillForm() {
+  if (currentData) {
+    Array.from(form.elements).forEach(el => {
+      if (el.name === 'email') {
+        el.value = currentData.email;
+      }
+      if (el.name === 'message') {
+        el.value = currentData.message;
+      }
+    });
   }
 }
-
-function getLocalStorage(key) {
-  try {
-    const valueSaved = localStorage.getItem(key);
-    return valueSaved === null ? undefined : JSON.parse(valueSaved);
-  } catch (error) {
-    console.error('Get state error', error.message);
-  }
-}
-if (getLocalStorage(KEY_LOCAL_STORAGE) !== undefined) {
-  emailStorage = getLocalStorage(KEY_LOCAL_STORAGE).email;
-  messageStorage = getLocalStorage(KEY_LOCAL_STORAGE).message;
-
-  if (!!emailStorage) {
-    EmailInputDefault.value = emailStorage;
-  }
-  if (!!messageStorage) {
-    MessageInputDeafult.value = messageStorage;
-  }
-}
-function valueHandler() {
-  const dataToSave = {
-    email: EmailInputDefault.value,
-    message: MessageInputDeafult.value,
-  };
-
-  setLocalStorage(dataToSave);
-  emailStorage = dataToSave.email;
-  messageStorage = dataToSave.message;
-}
-
-function formSubmit(event) {
-  event.preventDefault();
-  event.currentTarget.reset();
-  //localStorage.removeItem(KEY_LOCAL_STORAGE);
-  console.log(
-    `to jest mail: ${emailStorage}, \nto jest wiadomość: ${messageStorage}, \nobiekt: ${localStorage.getItem(
-      KEY_LOCAL_STORAGE
-    )} `
-  );
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  console.log(currentData);
   localStorage.clear();
-}
-
-form.addEventListener('input', throttle(valueHandler, 500));
-form.addEventListener('submit', formSubmit);
+  form.reset();
+});
