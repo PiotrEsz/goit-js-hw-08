@@ -21,7 +21,6 @@ player.setCurrentTime(getVideoplayerCurrentTime()).catch(function (err) {
       break;
 
     default:
-      console.log(`${error}`);
       break;
   }
 });
