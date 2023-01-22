@@ -22,19 +22,19 @@ feedbackForm.addEventListener(
 
 function contactForm() {
   if (currentData) {
-    Array.from(feedbackForm.elements).forEach(el => {
-      if (el.name === 'email') {
-        el.value = currentData.email;
-      }
-      if (el.name === 'message') {
-        el.value = currentData.message;
-      }
-    });
+    Array.from(feedbackForm.elements).forEach(
+      el => (el.value = currentData[el.name])
+    );
   }
 }
+
 feedbackForm.addEventListener('submit', e => {
   e.preventDefault();
   console.log(currentData);
-  localStorage.clear();
+  localStorage.remove();
   feedbackForm.reset();
 });
+
+Array.from(feedbackForm.elements).forEach(
+  el => (el.value = currentData[el.name])
+);
