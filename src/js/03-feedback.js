@@ -23,7 +23,7 @@ feedbackForm.addEventListener(
 function contactForm() {
   if (currentData) {
     Array.from(feedbackForm.elements).forEach(
-      el => (el.value = currentData[el.name])
+      el => (el.value = currentData[el.name] ? currentData[el.name] : '')
     );
   }
 }
